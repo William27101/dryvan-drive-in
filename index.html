@@ -93,7 +93,7 @@ const FF='collection:feature_films AND ';
 const D=[["Live News","live"],["Music Videos","live"],["Drama",FF+'subject:"Drama"'],["Faith","live"],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Outdoors & Motors","live"],["Westerns",FF+'subject:"Western"'],["Local & Government","live"],["Shopping","live"],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
 let B=D[2][1],LI=0,ti=null;
 const IMG={walk:'img/walk.webp',live:'img/open.webp',tr:'img/trailer.webp',box:'img/container.webp',end:'img/end.webp'};
-D.splice(12,0,["Continue Watching","cw"],["My Loads","ml"]);
+D.splice(12,0,["In Route","cw"],["My Loads","ml"]);
 function bay(img,n,lbl,cap,click,id){return `<div class="bay"><div class="ph" id="${id||''}" style="background-image:url(${img})" onclick="${click}">${n?`<div class="num">${n}</div>`:''}${lbl?`<div class="plbl">${lbl}</div>`:''}<div class="fade"></div></div><div class="cap">${cap}</div></div>`}
 menu.innerHTML=bay(IMG.walk,'','DRIVER CHECK IN','Profiles',"openChk()")+D.map((d,i)=>{const n=i+1,k=d[1];
  if(k=='live')return bay('img/live'+(LI++%6)+'.webp',n,d[0].toUpperCase(),d[0]+' · <span style="color:#4ade80">● live</span>',`lv(${i})`);
@@ -113,7 +113,7 @@ function openChk(){hd.textContent='DRIVER CHECK IN';renderP();if(stack.at(-1)!='
 function selP(id){PR.cur=id;saveP();renderP();stack=['ext'];show('ext');hd.textContent='DRYVAN DRIVE-IN'}
 function addP(){const n=pn.value.trim()||('Driver '+(PR.list.length+1));const id='p'+Date.now();PR.list.push({id,name:n.slice(0,20),av:avSel});pn.value='';selP(id)}
 function renP(id){const p=PR.list.find(x=>x.id==id),n=prompt('New name for '+p.name,p.name);if(n&&n.trim()){p.name=n.trim().slice(0,20);saveP();renderP()}}
-function delP(id){const p=PR.list.find(x=>x.id==id);if(!confirm('Delete driver "'+p.name+'" and their Continue Watching and My Loads?'))return;
+function delP(id){const p=PR.list.find(x=>x.id==id);if(!confirm('Delete driver "'+p.name+'" and their In Route and My Loads?'))return;
  localStorage.removeItem('cw:'+id);localStorage.removeItem('ml:'+id);PR.list=PR.list.filter(x=>x.id!=id);
  if(!PR.list.length)PR.list.push({id:'p1',name:'Driver 1',av:0});if(!PR.list.some(x=>x.id==PR.cur))PR.cur=PR.list[0].id;saveP();renderP()}
 let first=!PR;if(first){PR={list:[{id:'p1',name:'Driver 1',av:0}],cur:'p1'};saveP()}

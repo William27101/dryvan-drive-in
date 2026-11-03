@@ -5,7 +5,7 @@ function lstop(){if(hls){hls.destroy();hls=null}lvid.pause();lvid.removeAttribut
 async function ytId(c){try{const t=await (await fetch('https://www.youtube.com/channel/'+c+'/live')).text();const m=t.match(/"videoDetails":\{"videoId":"([\w-]{11})"/);if(m&&/"isLive(Now)?":true/.test(t))return m[1]}catch(e){}return null}
 async function lplay(i,k,b){const c=LIVE[i][k],n=c[0],u=c[1];document.querySelectorAll('#lch .item').forEach(e=>e.classList.remove('on'));if(b)b.classList.add('on');lvn.textContent='Now playing: '+n;lstop();
  if(u.startsWith('yt:')){const ch=u.slice(3);lvid.style.display='none';lyt.style.display='';let v=AND?await ytId(ch):null;
-  lyt.src=AND?'https://appassets.androidplatform.net/www/yt.html?'+(v?'v='+v:'c='+ch):'https://www.youtube.com/embed/'+(v||'live_stream?channel='+ch)+(v?'?':'&')+'autoplay=1&playsinline=1&rel=0';
+  lyt.src=AND?'https://appassets.androidplatform.net/www/yt.html?'+(v?'v='+v:'c='+ch)+'&cc='+(window.ccOn&&ccOn()?1:0):'https://www.youtube.com/embed/'+(v||'live_stream?channel='+ch)+(v?'?':'&')+'autoplay=1&playsinline=1&rel=0&hl=en'+(window.ccOn&&ccOn()?'&cc_load_policy=1&cc_lang_pref=en':'&cc_load_policy=0');
   lvn.innerHTML='Now playing: '+n+' · <a style="color:#93c5fd" href="https://www.youtube.com/channel/'+ch+'/live" target="_blank">open in YouTube</a>';return}
  if(window.Hls&&Hls.isSupported()){hls=new Hls();hls.loadSource(u);hls.attachMedia(lvid);hls.on(Hls.Events.MANIFEST_PARSED,()=>lvid.play().catch(()=>{}));hls.on(Hls.Events.ERROR,(e,d)=>{if(d.fatal){lvn.textContent=n+' is off the air right now. Try another channel.'}})}
  else{lvid.src=u;lvid.play().catch(()=>{})}}

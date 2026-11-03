@@ -81,7 +81,7 @@ background:linear-gradient(#050507 0 10px,#3a2a1a 10px 14px,transparent 14px),
 </style></head><body>
 <header><img src="icon.png" alt=""><b id="hd">DRYVAN DRIVE-IN</b><button id="pf" onclick="openChk()" style="margin-left:auto;background:none;border:1px solid #555;color:#ddd;border-radius:12px;padding:3px 8px;font-size:12px"></button><button onclick="hd.textContent='SEARCH';go('srch')" style="background:none;border:0;color:#fbbf24;font-size:20px" aria-label="Search">🔍</button><button id="back" onclick="back()">◀ Back</button></header>
 <section id="ext" class="v on"><div id="menu"></div><div class="cap" style="padding:44px 0 10px">◀ drag along the dock ▶</div></section>
-<section id="livev" class="v"><h2 id="lvt"></h2><p style="padding:0 14px;color:#ccc">Live feed coming soon. This open door will carry live channels.</p></section>
+<section id="livev" class="v"><video id="lvid" controls playsinline autoplay style="width:100%;background:#000;max-height:56vh"></video><h2 id="lvt"></h2><p id="lvn" style="padding:0 14px;color:#fbbf24"></p><div id="lch"></div><style>#lch .item.on{outline:2px solid #fbbf24}</style></section>
 <section id="chk" class="v"><div class="win"><div class="sign">DRIVER CHECK IN</div><div class="glass"><p>Select your driver profile</p><div id="plist"></div></div>
 <div class="ctr"><b>New driver</b><input id="pn" placeholder="Driver name" maxlength="20"><div id="avs"></div><button class="more" onclick="addP()">Check in new driver</button></div></div></section>
 <section id="srch" class="v"><h2>Search titles</h2><input id="sq" placeholder="Search movie & TV titles" onkeydown="if(event.key=='Enter')doS()"></section>
@@ -147,4 +147,4 @@ function det(id){go('det');curId=id;dlb.textContent="⬇ Download";dt.textConten
  const t=document.createElement('div');t.innerHTML=[].concat(md.description||'').join(' ');dd.textContent=t.textContent.slice(0,600);
  const f=(m.files||[]).filter(f=>/\.mp4$/i.test(f.name)).sort((a,b)=>(/512kb|h\.264/i.test(b.name)?1:0)-(/512kb|h\.264/i.test(a.name)?1:0))[0];
  if(f){vid.src=`https://archive.org/download/${id}/${encodeURIComponent(f.name)}`;vid.poster="https://archive.org/services/img/"+id;const c=LS("cw")[id];if(c)vid.addEventListener("loadedmetadata",()=>{vid.currentTime=c.t;dm.textContent+=" · resumed at "+fmt(c.t)},{once:true})}else dd.textContent="No in-app playable MP4 for this title. "+dd.textContent})}
-</script></body></html>
+</script><script src="hls.min.js"></script><script src="live.js"></script><script src="android.js"></script></body></html>

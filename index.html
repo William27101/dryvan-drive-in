@@ -54,6 +54,10 @@ video{width:100%;background:#000;max-height:60vh}#det{padding:0 0 30px}#det p{pa
 .wdl{background:#fbbf24;color:#111;font-weight:900;font-size:12px;text-align:center;padding:2px;margin:0 auto 4px;width:110px}
 .st{height:16px;background:repeating-linear-gradient(90deg,#9ca3af 0 4px,#6b7280 4px 8px);border-top:2px solid #d1d5db;margin:0 auto}
 #srch{padding:14px}#srch input{width:100%;padding:12px;font-size:16px;border-radius:6px;border:1px solid #f59e0b;background:#111;color:#fff}
+.ph{position:relative;height:440px;background-size:cover;background-position:center;border-radius:4px;cursor:pointer;overflow:hidden;box-shadow:0 6px 20px #000}
+.ph .num{top:12px;font-size:26px}.plbl{position:absolute;bottom:18px;left:10px;right:10px;text-align:center;background:#000a;color:#fbbf24;font-weight:900;letter-spacing:2px;padding:6px;border-radius:4px;font-size:15px}
+.ph .fade{position:absolute;inset:0;background:#fde68a;opacity:0;transition:opacity 1.1s}.ph{transition:transform 1.1s ease-in}
+.ph.open{transform:scale(1.6)}.ph.open .fade{opacity:.85}
 </style></head><body>
 <header><img src="icon.png" alt=""><b id="hd">DRYVAN DRIVE-IN</b><button id="back" onclick="back()">◀ Back</button></header>
 <section id="ext" class="v on"><div id="menu"></div><div class="cap">◀ swipe the dock row ▶</div></section>
@@ -61,16 +65,31 @@ video{width:100%;background:#000;max-height:60vh}#det{padding:0 0 30px}#det p{pa
 <section id="srch" class="v"><h2>Driver Check · Search</h2><input id="sq" placeholder="Search movie & TV titles" onkeydown="if(event.key=='Enter')doS()"></section>
 <section id="pals" class="v"><h2>Pallets by decade</h2><div class="grid" id="grid"></div></section>
 <section id="list" class="v"><h2 id="lt"></h2><div id="items"></div><button class="more" id="more" onclick="load()">Load more</button></section>
-<section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
+<section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><button class="more" id="dlb" onclick="dl()">⬇ Download</button><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
 <script>
 const FF='collection:feature_films AND ';
 const D=[["Live News","live"],["Music Videos","live"],["Faith","live"],["Outdoors & Motors","live"],["Local & Government","live"],["Shopping","live"],
 ["Drama",FF+'subject:"Drama"'],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Westerns",FF+'subject:"Western"'],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
 let B=D[6][1],ti=null;
-const T='<div class="trailer"><div class="front"><div class="lbl">LBL</div><div class="gh r"></div><div class="plug"></div><div class="gh b"></div></div><div class="plate"></div><div class="pin"></div><div class="leg l"></div><div class="leg rr"></div><div class="crank"></div></div>';
-menu.innerHTML='<div class="bay"><div class="wall"><div class="light"></div><div class="stairs" onclick="hd.textContent=\'DRIVER CHECK\';go(\'srch\')"><div class="wdl">DRIVER CHECK</div><div class="wd"></div><div class="st" style="width:110px"></div><div class="st" style="width:140px"></div><div class="st" style="width:170px"></div><div class="st" style="width:200px"></div></div></div><div class="cap">Search</div></div>'+D.map((d,i)=>{const n=i+1,k=d[1]=='live'?'live':d[1]=='end'?'end':'';
- return `<div class="bay"><div class="wall ${k}" id="w${i}" ${k=='live'?`onclick="lv(${i})"`:k?'':`onclick="openT(${i})"`}><div class="light"></div><div class="num">${n}</div><div class="dock"><div class="glow"></div><div class="roll"></div>${k=='live'?'<b>LIVE ▶</b>':''}</div>${k=='live'?'':T.replace('LBL',k?'':d[0].toUpperCase())}</div><div class="cap">${d[0]}${k=='live'?' · live':k?' · closed':' · <span id="t'+i+'">…</span> titles'}</div></div>`}).join('');
+const IMG={walk:'img/walk.webp',live:'img/open.webp',tr:'img/trailer.webp',box:'img/container.webp',end:'img/end.webp'};
+D.splice(12,0,["Continue Watching","cw"],["My Loads","ml"]);
+function bay(img,n,lbl,cap,click,id){return `<div class="bay"><div class="ph" id="${id||''}" style="background-image:url(${img})" onclick="${click}">${n?`<div class="num">${n}</div>`:''}${lbl?`<div class="plbl">${lbl}</div>`:''}<div class="fade"></div></div><div class="cap">${cap}</div></div>`}
+menu.innerHTML=bay(IMG.walk,'','DRIVER CHECK','Search',"hd.textContent='DRIVER CHECK';go('srch')")+D.map((d,i)=>{const n=i+1,k=d[1];
+ if(k=='live')return bay(IMG.live,n,d[0].toUpperCase(),d[0]+' · <span style="color:#4ade80">● live</span>',`lv(${i})`);
+ if(k=='end')return bay(IMG.end,n,'','End of row · closed','');
+ if(k=='cw'||k=='ml')return bay(IMG.box,n,d[0].toUpperCase(),d[0],`saved('${k}',${i})`);
+ return bay(IMG.tr,n,d[0].toUpperCase(),d[0]+' · <span id="t'+i+'">…</span> titles',`openT(${i})`,'w'+i)}).join('');
 D.forEach((d,i)=>{if(i>5&&i<12)fetch("https://archive.org/advancedsearch.php?output=json&rows=0&q="+encodeURIComponent(d[1])).then(r=>r.json()).then(j=>document.getElementById('t'+i).textContent=j.response.numFound.toLocaleString())});
+const LS=k=>JSON.parse(localStorage.getItem(k)||'{}'),SV=(k,o)=>localStorage.setItem(k,JSON.stringify(o));
+const fmt=t=>Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
+function saved(k,i){hd.textContent='DOOR '+(i+1)+' · '+D[i][0].toUpperCase();lt.textContent=D[i][0];more.style.display='none';
+ const o=LS(k),a=Object.entries(o).sort((x,y)=>y[1].at-x[1].at);
+ items.innerHTML=a.length?a.map(([id,v])=>`<div class="item" onclick="det('${id}')"><img loading="lazy" src="https://archive.org/services/img/${id}"><div><b>${v.title.replace(/</g,'&lt;')}</b><span>${k=='cw'?'Stopped at '+fmt(v.t)+' · tap to resume':'<a href="'+v.url+'" download target="_blank" style="color:#fbbf24" onclick="event.stopPropagation()">Download file</a>'}</span></div></div>`).join(''):'<p style="padding:14px;color:#aaa">'+(k=='cw'?'Nothing in progress yet. Start a title and it will show up here.':'No loads yet. Tap Download in the player to add one.')+'</p>';
+ go('list')}
+let curId,curT,lastS=0;
+vid.addEventListener('timeupdate',()=>{if(!curId||vid.currentTime<5||Date.now()-lastS<3000)return;lastS=Date.now();const o=LS('cw');o[curId]={title:curT,t:vid.currentTime,at:Date.now()};SV('cw',o)});
+vid.addEventListener('ended',()=>{const o=LS('cw');delete o[curId];SV('cw',o)});
+function dl(){if(!vid.src)return;const o=LS('ml');o[curId]={title:curT,url:vid.src,at:Date.now()};SV('ml',o);dlb.textContent='✓ Saved to My Loads';const a=document.createElement('a');a.href=vid.src;a.download='';a.target='_blank';a.click()}
 function lv(i){hd.textContent="DOOR "+(i+1)+" · "+D[i][0].toUpperCase();lvt.textContent=D[i][0]+" (live)";go('livev')}
 function doS(){B='(collection:feature_films OR collection:classic_tv) AND title:('+sq.value.replace(/[^\w ]/g,'')+')';cur=-1;page=1;items.innerHTML='';lt.textContent='Search: '+sq.value;go('list');load()}
 const P=[["1920s","year:[1920 TO 1929]"],["1930s","year:[1930 TO 1939]"],["1940s","year:[1940 TO 1949]"],["1950s","year:[1950 TO 1959]"],["1960s","year:[1960 TO 1969]"],["1970s","year:[1970 TO 1979]"],["1980s","year:[1980 TO 1989]"],["Unmarked freight","NOT year:[1920 TO 1989]"]];
@@ -78,17 +97,17 @@ const S=u=>fetch("https://archive.org/advancedsearch.php?output=json&"+u).then(r
 const q=x=>encodeURIComponent(x?B+" AND "+x:B);let stack=["ext"],cur,page;
 function show(v){document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id==v));document.getElementById('back').style.display=v=='ext'?'none':'block';scrollTo(0,0)}
 function go(v){stack.push(v);show(v)}
-function back(){if(stack.at(-1)=='det'){vid.pause();vid.removeAttribute('src');vid.load()}stack.pop();const v=stack.at(-1);if(v=='ext'){document.querySelectorAll('.wall.open').forEach(e=>e.classList.remove('open'));hd.textContent='DRYVAN DRIVE-IN'}show(v)}
+function back(){if(stack.at(-1)=='det'){vid.pause();vid.removeAttribute('src');vid.load()}stack.pop();const v=stack.at(-1);if(v=='ext'){document.querySelectorAll('.ph.open').forEach(e=>e.classList.remove('open'));hd.textContent='DRYVAN DRIVE-IN'}show(v)}
 function pals(){grid.innerHTML=P.map((p,i)=>`<div class="pal" onclick="pick(${i})"><div class="box">${p[0]}</div><small id="c${i}">counting…</small></div>`).join('');
 P.forEach((p,i)=>S("q="+q(p[1])+"&rows=0").then(j=>document.getElementById('c'+i).textContent=j.response.numFound.toLocaleString()+" films").catch(()=>document.getElementById('c'+i).textContent="count unavailable"))}
-function openT(i){ti=i;B=D[i][1];hd.textContent='DOOR '+(i+1)+' · '+D[i][0].toUpperCase();document.getElementById('w'+i).classList.add('open');pals();setTimeout(()=>go('pals'),1300)}
+function openT(i){ti=i;B=D[i][1];hd.textContent='DOOR '+(i+1)+' · '+D[i][0].toUpperCase();document.getElementById('w'+i).classList.add('open');pals();setTimeout(()=>go('pals'),1100)}
 function pick(i){cur=i;page=1;items.innerHTML='';lt.textContent=P[i][0]+" pallet";go('list');load()}
-function load(){more.textContent="Loading…";S("q="+q(P[cur][1])+"&fl[]=identifier&fl[]=title&fl[]=year&sort[]=downloads+desc&rows=30&page="+page).then(j=>{
+function load(){more.textContent="Loading…";S("q="+q(cur<0?"":P[cur][1])+"&fl[]=identifier&fl[]=title&fl[]=year&sort[]=downloads+desc&rows=30&page="+page).then(j=>{
  items.insertAdjacentHTML('beforeend',j.response.docs.map(d=>`<div class="item" onclick="det('${d.identifier}')"><img loading="lazy" src="https://archive.org/services/img/${d.identifier}"><div><b>${(d.title+'').replace(/</g,'&lt;')}</b><span>${d.year||'no year'}</span></div></div>`).join(''));
  more.style.display=page*30<j.response.numFound?'block':'none';more.textContent="Load more";page++}).catch(()=>more.textContent="Retry")}
-function det(id){go('det');dt.textContent="Loading…";dm.textContent=dd.textContent="";vid.removeAttribute('src');
- fetch("https://archive.org/metadata/"+id).then(r=>r.json()).then(m=>{const md=m.metadata||{};dt.textContent=md.title||id;dm.textContent=[md.year||md.date,md.runtime].filter(Boolean).join(" · ");
+function det(id){go('det');curId=id;dlb.textContent="⬇ Download";dt.textContent="Loading…";dm.textContent=dd.textContent="";vid.removeAttribute('src');
+ fetch("https://archive.org/metadata/"+id).then(r=>r.json()).then(m=>{const md=m.metadata||{};dt.textContent=curT=md.title||id;dm.textContent=[md.year||md.date,md.runtime].filter(Boolean).join(" · ");
  const t=document.createElement('div');t.innerHTML=[].concat(md.description||'').join(' ');dd.textContent=t.textContent.slice(0,600);
  const f=(m.files||[]).filter(f=>/\.mp4$/i.test(f.name)).sort((a,b)=>(/512kb|h\.264/i.test(b.name)?1:0)-(/512kb|h\.264/i.test(a.name)?1:0))[0];
- if(f){vid.src=`https://archive.org/download/${id}/${encodeURIComponent(f.name)}`;vid.poster="https://archive.org/services/img/"+id}else dd.textContent="No in-app playable MP4 for this title. "+dd.textContent})}
+ if(f){vid.src=`https://archive.org/download/${id}/${encodeURIComponent(f.name)}`;vid.poster="https://archive.org/services/img/"+id;const c=LS("cw")[id];if(c)vid.addEventListener("loadedmetadata",()=>{vid.currentTime=c.t;dm.textContent+=" · resumed at "+fmt(c.t)},{once:true})}else dd.textContent="No in-app playable MP4 for this title. "+dd.textContent})}
 </script></body></html>

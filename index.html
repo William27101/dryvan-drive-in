@@ -63,10 +63,10 @@ background:linear-gradient(#050507 0 10px,#3a2a1a 10px 14px,transparent 14px),
  linear-gradient(transparent 0 205px,#2a2018 205px 212px,transparent 212px),
  repeating-linear-gradient(90deg,#6b5236 0 14px,#5a4430 14px 18px) 0 0/100% 205px no-repeat,
  linear-gradient(#4a3a2a 0 470px,#2b2118 470px 480px,#1c1610 480px);min-height:520px}
-#menu .bay{flex:0 0 270px;margin:0 -24px;width:auto;position:relative;scroll-snap-align:none}
+#menu .bay{flex:0 0 270px;margin:0 -14px;width:auto;position:relative;scroll-snap-align:none}
 #menu .bay:first-child{margin-left:0}#menu .bay:last-child{margin-right:0}
 #menu .ph{border-radius:0;box-shadow:none;height:480px;
--webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
 #menu .ph .num{top:112px;background:none;color:#f5f5f0;font:900 34px/1 Impact,'Arial Black',sans-serif;text-shadow:0 0 2px #000,0 0 10px #000a;opacity:.92;padding:0}
 #menu .cap{position:absolute;bottom:-34px;left:0;right:0;z-index:2}
 #menu .plbl{bottom:24px;left:44px;right:44px}
@@ -81,18 +81,17 @@ background:linear-gradient(#050507 0 10px,#3a2a1a 10px 14px,transparent 14px),
 <section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><button class="more" id="dlb" onclick="dl()">⬇ Download</button><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
 <script>
 const FF='collection:feature_films AND ';
-const D=[["Live News","live"],["Music Videos","live"],["Faith","live"],["Outdoors & Motors","live"],["Local & Government","live"],["Shopping","live"],
-["Drama",FF+'subject:"Drama"'],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Westerns",FF+'subject:"Western"'],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
-let B=D[6][1],ti=null;
+const D=[["Live News","live"],["Music Videos","live"],["Drama",FF+'subject:"Drama"'],["Faith","live"],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Outdoors & Motors","live"],["Westerns",FF+'subject:"Western"'],["Local & Government","live"],["Shopping","live"],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
+let B=D[2][1],LI=0,ti=null;
 const IMG={walk:'img/walk.webp',live:'img/open.webp',tr:'img/trailer.webp',box:'img/container.webp',end:'img/end.webp'};
 D.splice(12,0,["Continue Watching","cw"],["My Loads","ml"]);
 function bay(img,n,lbl,cap,click,id){return `<div class="bay"><div class="ph" id="${id||''}" style="background-image:url(${img})" onclick="${click}">${n?`<div class="num">${n}</div>`:''}${lbl?`<div class="plbl">${lbl}</div>`:''}<div class="fade"></div></div><div class="cap">${cap}</div></div>`}
 menu.innerHTML=bay(IMG.walk,'','DRIVER CHECK','Search',"hd.textContent='DRIVER CHECK';go('srch')")+D.map((d,i)=>{const n=i+1,k=d[1];
- if(k=='live')return bay(IMG.live,n,d[0].toUpperCase(),d[0]+' · <span style="color:#4ade80">● live</span>',`lv(${i})`);
+ if(k=='live')return bay('img/live'+(LI++%6)+'.webp',n,d[0].toUpperCase(),d[0]+' · <span style="color:#4ade80">● live</span>',`lv(${i})`);
  if(k=='end')return bay(IMG.end,n,'','End of row · closed','');
  if(k=='cw'||k=='ml')return bay(IMG.box,n,d[0].toUpperCase(),d[0],`saved('${k}',${i})`);
  return bay(IMG.tr,n,d[0].toUpperCase(),d[0]+' · <span id="t'+i+'">…</span> titles',`openT(${i})`,'w'+i)}).join('');
-D.forEach((d,i)=>{if(i>5&&i<12)fetch("https://archive.org/advancedsearch.php?output=json&rows=0&q="+encodeURIComponent(d[1])).then(r=>r.json()).then(j=>document.getElementById('t'+i).textContent=j.response.numFound.toLocaleString())});
+D.forEach((d,i)=>{if(!['live','end','cw','ml'].includes(d[1]))fetch("https://archive.org/advancedsearch.php?output=json&rows=0&q="+encodeURIComponent(d[1])).then(r=>r.json()).then(j=>document.getElementById('t'+i).textContent=j.response.numFound.toLocaleString())});
 const LS=k=>JSON.parse(localStorage.getItem(k)||'{}'),SV=(k,o)=>localStorage.setItem(k,JSON.stringify(o));
 const fmt=t=>Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
 function saved(k,i){hd.textContent='DOOR '+(i+1)+' · '+D[i][0].toUpperCase();lt.textContent=D[i][0];more.style.display='none';

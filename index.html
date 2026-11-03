@@ -81,7 +81,7 @@ background:linear-gradient(#050507 0 10px,#3a2a1a 10px 14px,transparent 14px),
 </style></head><body>
 <header><img src="icon.png" alt=""><b id="hd">DRYVAN DRIVE-IN</b><button id="pf" onclick="openChk()" style="margin-left:auto;background:none;border:1px solid #555;color:#ddd;border-radius:12px;padding:3px 8px;font-size:12px"></button><button onclick="hd.textContent='SEARCH';go('srch')" style="background:none;border:0;color:#fbbf24;font-size:20px" aria-label="Search">🔍</button><button id="back" onclick="back()">◀ Back</button></header>
 <section id="ext" class="v on"><div id="menu"></div><div class="cap" style="padding:44px 0 10px">◀ drag along the dock ▶</div></section>
-<section id="livev" class="v"><video id="lvid" controls playsinline autoplay style="width:100%;background:#000;max-height:56vh"></video><h2 id="lvt"></h2><p id="lvn" style="padding:0 14px;color:#fbbf24"></p><div id="lch"></div><style>#lch .item.on{outline:2px solid #fbbf24}</style></section>
+<section id="livev" class="v"><iframe id="lyt" style="display:none;width:100%;aspect-ratio:16/9;border:0;background:#000" allow="autoplay;encrypted-media;fullscreen;picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><video id="lvid" controls playsinline autoplay style="width:100%;background:#000;max-height:56vh"></video><h2 id="lvt"></h2><p id="lvn" style="padding:0 14px;color:#fbbf24"></p><div id="lch"></div><style>#lch .item.on{outline:2px solid #fbbf24}</style></section>
 <section id="chk" class="v"><div class="win"><div class="sign">DRIVER CHECK IN</div><div class="glass"><p>Select your driver profile</p><div id="plist"></div></div>
 <div class="ctr"><b>New driver</b><input id="pn" placeholder="Driver name" maxlength="20"><div id="avs"></div><button class="more" onclick="addP()">Check in new driver</button></div></div></section>
 <section id="srch" class="v"><h2>Search titles</h2><input id="sq" placeholder="Search movie & TV titles" onkeydown="if(event.key=='Enter')doS()"></section>
@@ -90,7 +90,7 @@ background:linear-gradient(#050507 0 10px,#3a2a1a 10px 14px,transparent 14px),
 <section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><button class="more" id="dlb" onclick="dl()">⬇ Download</button><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
 <script>
 const FF='collection:feature_films AND ';
-const D=[["Live News","live"],["Music Videos","live"],["Drama",FF+'subject:"Drama"'],["Faith","live"],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Outdoors & Motors","live"],["Westerns",FF+'subject:"Western"'],["Local & Government","live"],["Shopping","live"],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
+const D=[["Live News","live"],["Weather","live"],["Drama",FF+'subject:"Drama"'],["Faith","live"],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Outdoors & Motors","live"],["Westerns",FF+'subject:"Western"'],["Regional Routes","live"],["Shopping","live"],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
 let B=D[2][1],LI=0,ti=null;
 const IMG={walk:'img/walk.webp',live:'img/open.webp',tr:'img/trailer.webp',box:'img/container.webp',end:'img/end.webp'};
 D.splice(12,0,["In Route","cw"],["My Loads","ml"]);

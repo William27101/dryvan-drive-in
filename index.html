@@ -15,7 +15,7 @@ header img{width:34px;height:34px;border-radius:8px}header b{color:#fbbf24;lette
 .dock .glow{position:absolute;inset:0;background:radial-gradient(#ffb34755,#1a1208 70%)}
 .roll{position:absolute;inset:0;background:repeating-linear-gradient(#8a8f98 0 16px,#6b7079 16px 19px);transition:transform 1.2s ease-in}
 .open .roll{transform:translateY(-100%)}
-.trailer{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:250px;height:300px;cursor:pointer;transition:transform 1s ease-in,opacity 1s}
+.trailer{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:230px;height:300px;cursor:pointer;transition:transform 1s ease-in,opacity 1s}
 .open .trailer{transform:translateX(-50%) translateY(130%) scale(1.3);opacity:0}
 .front{position:absolute;top:0;left:0;right:0;height:240px;background:linear-gradient(#f4f4f4,#d4d4d4);border:4px solid #9ca3af;border-radius:6px 6px 2px 2px}
 .front:before{content:"";position:absolute;inset:14px;border:2px dashed #bbb}
@@ -41,26 +41,47 @@ h2{margin:14px;color:#fbbf24;font-size:18px}
 .item div{flex:1}.item b{display:block}.item span{color:#999;font-size:13px}
 .more{display:block;margin:14px auto;background:#f59e0b;color:#111;border:0;border-radius:6px;padding:10px 20px;font-weight:700;font-size:15px}
 video{width:100%;background:#000;max-height:60vh}#det{padding:0 0 30px}#det p{padding:0 14px;color:#ccc;font-size:14px}
+#menu{overflow-x:auto;white-space:nowrap;padding:16px 8px;scroll-snap-type:x mandatory}
+.bay{display:inline-block;vertical-align:bottom;width:270px;margin:0 6px;scroll-snap-align:center;white-space:normal}
+.bay .wall{height:420px;margin:0}
+.wall.live .light{background:#4ade80;box-shadow:0 0 30px 18px #22c55e88}.wall.end .light{background:#ef4444;box-shadow:0 0 30px 18px #dc262688}
+.wall.live .roll{transform:translateY(-100%)}.wall.live .dock{cursor:pointer;height:300px}
+.wall.live .dock .glow{background:radial-gradient(#fde68a66,#1a1208 70%)}
+.wall.live .dock b{position:absolute;top:110px;left:0;right:0;text-align:center;color:#fde68a;font-size:20px}
+.cap{text-align:center;color:#ccc;font-size:14px;margin-top:6px}
+.stairs{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);width:200px;cursor:pointer}
+.wd{margin:0 auto;width:80px;height:130px;background:#6b7079;border:4px solid #444;position:relative}.wd:after{content:"";position:absolute;right:8px;top:60px;width:10px;height:6px;background:#ddd}
+.wdl{background:#fbbf24;color:#111;font-weight:900;font-size:12px;text-align:center;padding:2px;margin:0 auto 4px;width:110px}
+.st{height:16px;background:repeating-linear-gradient(90deg,#9ca3af 0 4px,#6b7280 4px 8px);border-top:2px solid #d1d5db;margin:0 auto}
+#srch{padding:14px}#srch input{width:100%;padding:12px;font-size:16px;border-radius:6px;border:1px solid #f59e0b;background:#111;color:#fff}
 </style></head><body>
-<header><img src="icon.png" alt=""><b>DOOR 7 · DRAMA</b><button id="back" onclick="back()">◀ Back</button></header>
-<section id="ext" class="v on"><div class="wall" id="tr"><div class="light"></div><div class="num">7</div>
-<div class="dock"><div class="glow"></div><div class="roll"></div></div><div class="trailer" onclick="openT()"><div class="front"><div class="lbl">DRAMA</div><div class="gh r"></div><div class="plug"></div><div class="gh b"></div></div><div class="plate"></div><div class="pin"></div><div class="leg l"></div><div class="leg rr"></div><div class="crank"></div></div></div>
-<div class="hint"><span class="red"></span> Dropped trailer · On demand · <span id="tot">…</span> films<br>Dropped nose-on · tap the trailer to roll up door 7</div></section>
+<header><img src="icon.png" alt=""><b id="hd">DRYVAN DRIVE-IN</b><button id="back" onclick="back()">◀ Back</button></header>
+<section id="ext" class="v on"><div id="menu"></div><div class="cap">◀ swipe the dock row ▶</div></section>
+<section id="livev" class="v"><h2 id="lvt"></h2><p style="padding:0 14px;color:#ccc">Live feed coming soon. This open door will carry live channels.</p></section>
+<section id="srch" class="v"><h2>Driver Check · Search</h2><input id="sq" placeholder="Search movie & TV titles" onkeydown="if(event.key=='Enter')doS()"></section>
 <section id="pals" class="v"><h2>Pallets by decade</h2><div class="grid" id="grid"></div></section>
 <section id="list" class="v"><h2 id="lt"></h2><div id="items"></div><button class="more" id="more" onclick="load()">Load more</button></section>
 <section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
 <script>
-const B='collection:feature_films AND subject:"Drama"';
+const FF='collection:feature_films AND ';
+const D=[["Live News","live"],["Music Videos","live"],["Faith","live"],["Outdoors & Motors","live"],["Local & Government","live"],["Shopping","live"],
+["Drama",FF+'subject:"Drama"'],["Comedy",FF+'subject:"Comedy"'],["Noir & Mystery",FF+'(subject:"Film Noir" OR subject:"Mystery")'],["Westerns",FF+'subject:"Western"'],["Horror & Sci-Fi",FF+'(subject:"Horror" OR subject:"Sci-Fi" OR subject:"Science Fiction")'],["Classic TV",'collection:classic_tv'],["End of row","end"]];
+let B=D[6][1],ti=null;
+const T='<div class="trailer"><div class="front"><div class="lbl">LBL</div><div class="gh r"></div><div class="plug"></div><div class="gh b"></div></div><div class="plate"></div><div class="pin"></div><div class="leg l"></div><div class="leg rr"></div><div class="crank"></div></div>';
+menu.innerHTML='<div class="bay"><div class="wall"><div class="light"></div><div class="stairs" onclick="hd.textContent=\'DRIVER CHECK\';go(\'srch\')"><div class="wdl">DRIVER CHECK</div><div class="wd"></div><div class="st" style="width:110px"></div><div class="st" style="width:140px"></div><div class="st" style="width:170px"></div><div class="st" style="width:200px"></div></div></div><div class="cap">Search</div></div>'+D.map((d,i)=>{const n=i+1,k=d[1]=='live'?'live':d[1]=='end'?'end':'';
+ return `<div class="bay"><div class="wall ${k}" id="w${i}" ${k=='live'?`onclick="lv(${i})"`:k?'':`onclick="openT(${i})"`}><div class="light"></div><div class="num">${n}</div><div class="dock"><div class="glow"></div><div class="roll"></div>${k=='live'?'<b>LIVE ▶</b>':''}</div>${k=='live'?'':T.replace('LBL',k?'':d[0].toUpperCase())}</div><div class="cap">${d[0]}${k=='live'?' · live':k?' · closed':' · <span id="t'+i+'">…</span> titles'}</div></div>`}).join('');
+D.forEach((d,i)=>{if(i>5&&i<12)fetch("https://archive.org/advancedsearch.php?output=json&rows=0&q="+encodeURIComponent(d[1])).then(r=>r.json()).then(j=>document.getElementById('t'+i).textContent=j.response.numFound.toLocaleString())});
+function lv(i){hd.textContent="DOOR "+(i+1)+" · "+D[i][0].toUpperCase();lvt.textContent=D[i][0]+" (live)";go('livev')}
+function doS(){B='(collection:feature_films OR collection:classic_tv) AND title:('+sq.value.replace(/[^\w ]/g,'')+')';cur=-1;page=1;items.innerHTML='';lt.textContent='Search: '+sq.value;go('list');load()}
 const P=[["1920s","year:[1920 TO 1929]"],["1930s","year:[1930 TO 1939]"],["1940s","year:[1940 TO 1949]"],["1950s","year:[1950 TO 1959]"],["1960s","year:[1960 TO 1969]"],["1970s","year:[1970 TO 1979]"],["1980s","year:[1980 TO 1989]"],["Unmarked freight","NOT year:[1920 TO 1989]"]];
 const S=u=>fetch("https://archive.org/advancedsearch.php?output=json&"+u).then(r=>r.json());
-const q=x=>encodeURIComponent(B+" AND "+x);let stack=["ext"],cur,page;
+const q=x=>encodeURIComponent(x?B+" AND "+x:B);let stack=["ext"],cur,page;
 function show(v){document.querySelectorAll('.v').forEach(e=>e.classList.toggle('on',e.id==v));document.getElementById('back').style.display=v=='ext'?'none':'block';scrollTo(0,0)}
 function go(v){stack.push(v);show(v)}
-function back(){if(stack.at(-1)=='det'){vid.pause();vid.removeAttribute('src');vid.load()}stack.pop();const v=stack.at(-1);if(v=='ext')tr.classList.remove('open');show(v)}
-S("q="+encodeURIComponent(B)+"&rows=0").then(j=>tot.textContent=j.response.numFound.toLocaleString());
-grid.innerHTML=P.map((p,i)=>`<div class="pal" onclick="pick(${i})"><div class="box">${p[0]}</div><small id="c${i}">counting…</small></div>`).join('');
-P.forEach((p,i)=>S("q="+q(p[1])+"&rows=0").then(j=>document.getElementById('c'+i).textContent=j.response.numFound.toLocaleString()+" films").catch(()=>document.getElementById('c'+i).textContent="count unavailable"));
-function openT(){tr.classList.add('open');setTimeout(()=>go('pals'),1300)}
+function back(){if(stack.at(-1)=='det'){vid.pause();vid.removeAttribute('src');vid.load()}stack.pop();const v=stack.at(-1);if(v=='ext'){document.querySelectorAll('.wall.open').forEach(e=>e.classList.remove('open'));hd.textContent='DRYVAN DRIVE-IN'}show(v)}
+function pals(){grid.innerHTML=P.map((p,i)=>`<div class="pal" onclick="pick(${i})"><div class="box">${p[0]}</div><small id="c${i}">counting…</small></div>`).join('');
+P.forEach((p,i)=>S("q="+q(p[1])+"&rows=0").then(j=>document.getElementById('c'+i).textContent=j.response.numFound.toLocaleString()+" films").catch(()=>document.getElementById('c'+i).textContent="count unavailable"))}
+function openT(i){ti=i;B=D[i][1];hd.textContent='DOOR '+(i+1)+' · '+D[i][0].toUpperCase();document.getElementById('w'+i).classList.add('open');pals();setTimeout(()=>go('pals'),1300)}
 function pick(i){cur=i;page=1;items.innerHTML='';lt.textContent=P[i][0]+" pallet";go('list');load()}
 function load(){more.textContent="Loading…";S("q="+q(P[cur][1])+"&fl[]=identifier&fl[]=title&fl[]=year&sort[]=downloads+desc&rows=30&page="+page).then(j=>{
  items.insertAdjacentHTML('beforeend',j.response.docs.map(d=>`<div class="item" onclick="det('${d.identifier}')"><img loading="lazy" src="https://archive.org/services/img/${d.identifier}"><div><b>${(d.title+'').replace(/</g,'&lt;')}</b><span>${d.year||'no year'}</span></div></div>`).join(''));

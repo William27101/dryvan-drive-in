@@ -4,7 +4,7 @@
 *{box-sizing:border-box}body{margin:0;background:#07070b;color:#eee;font-family:system-ui,sans-serif;min-height:100vh}
 header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:2px solid #f59e0b55}
 header img{width:34px;height:34px;border-radius:8px}header b{color:#fbbf24;letter-spacing:1px}
-#back{margin-left:auto;background:#222;color:#fbbf24;border:1px solid #f59e0b;border-radius:6px;padding:6px 12px;font-size:15px;display:none}
+#back{background:#222;color:#fbbf24;border:1px solid #f59e0b;border-radius:6px;padding:6px 12px;font-size:15px;display:none}
 .v{display:none}.v.on{display:block}
 /* exterior */
 #ext{padding:16px;text-align:center}
@@ -71,11 +71,20 @@ background:linear-gradient(#050507 0 10px,#3a2a1a 10px 14px,transparent 14px),
 #menu .cap{position:absolute;bottom:-34px;left:0;right:0;z-index:2}
 #menu .plbl{bottom:24px;left:44px;right:44px}
 .cap{color:#ddd}
-#ext{padding:0!important}</style></head><body>
-<header><img src="icon.png" alt=""><b id="hd">DRYVAN DRIVE-IN</b><button id="back" onclick="back()">◀ Back</button></header>
+#ext{padding:0!important}.win{margin:12px;background:#2b2118;border:3px solid #555;border-radius:6px;overflow:hidden}.sign{background:#fbbf24;color:#111;font-weight:900;text-align:center;padding:8px;letter-spacing:2px}
+.glass{background:linear-gradient(#1d2a33,#0e161c);padding:10px;border-bottom:10px solid #6b5236}.glass p{color:#9cc;margin:4px 0 8px;font-size:13px}
+.pr{display:flex;align-items:center;gap:8px;padding:8px;margin:6px 0;background:#0008;border-radius:6px;border:1px solid #333}.pr.cur{border-color:#4ade80}
+.pr .av{font-size:24px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center}.pr b{flex:1;cursor:pointer}
+.pr button{background:#333;color:#ddd;border:0;border-radius:4px;padding:5px 8px;font-size:12px}
+.ctr{padding:12px}.ctr input{width:100%;padding:10px;font-size:16px;border-radius:6px;border:1px solid #f59e0b;background:#111;color:#fff;margin:8px 0}
+#avs span{display:inline-block;font-size:24px;width:42px;height:42px;line-height:42px;text-align:center;border-radius:50%;margin:3px;cursor:pointer;border:2px solid transparent}#avs span.sel{border-color:#fbbf24}
+</style></head><body>
+<header><img src="icon.png" alt=""><b id="hd">DRYVAN DRIVE-IN</b><button id="pf" onclick="openChk()" style="margin-left:auto;background:none;border:1px solid #555;color:#ddd;border-radius:12px;padding:3px 8px;font-size:12px"></button><button onclick="hd.textContent='SEARCH';go('srch')" style="background:none;border:0;color:#fbbf24;font-size:20px" aria-label="Search">🔍</button><button id="back" onclick="back()">◀ Back</button></header>
 <section id="ext" class="v on"><div id="menu"></div><div class="cap" style="padding:44px 0 10px">◀ drag along the dock ▶</div></section>
 <section id="livev" class="v"><h2 id="lvt"></h2><p style="padding:0 14px;color:#ccc">Live feed coming soon. This open door will carry live channels.</p></section>
-<section id="srch" class="v"><h2>Driver Check · Search</h2><input id="sq" placeholder="Search movie & TV titles" onkeydown="if(event.key=='Enter')doS()"></section>
+<section id="chk" class="v"><div class="win"><div class="sign">DRIVER CHECK IN</div><div class="glass"><p>Select your driver profile</p><div id="plist"></div></div>
+<div class="ctr"><b>New driver</b><input id="pn" placeholder="Driver name" maxlength="20"><div id="avs"></div><button class="more" onclick="addP()">Check in new driver</button></div></div></section>
+<section id="srch" class="v"><h2>Search titles</h2><input id="sq" placeholder="Search movie & TV titles" onkeydown="if(event.key=='Enter')doS()"></section>
 <section id="pals" class="v"><h2>Pallets by decade</h2><div class="grid" id="grid"></div></section>
 <section id="list" class="v"><h2 id="lt"></h2><div id="items"></div><button class="more" id="more" onclick="load()">Load more</button></section>
 <section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><button class="more" id="dlb" onclick="dl()">⬇ Download</button><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
@@ -86,13 +95,29 @@ let B=D[2][1],LI=0,ti=null;
 const IMG={walk:'img/walk.webp',live:'img/open.webp',tr:'img/trailer.webp',box:'img/container.webp',end:'img/end.webp'};
 D.splice(12,0,["Continue Watching","cw"],["My Loads","ml"]);
 function bay(img,n,lbl,cap,click,id){return `<div class="bay"><div class="ph" id="${id||''}" style="background-image:url(${img})" onclick="${click}">${n?`<div class="num">${n}</div>`:''}${lbl?`<div class="plbl">${lbl}</div>`:''}<div class="fade"></div></div><div class="cap">${cap}</div></div>`}
-menu.innerHTML=bay(IMG.walk,'','DRIVER CHECK','Search',"hd.textContent='DRIVER CHECK';go('srch')")+D.map((d,i)=>{const n=i+1,k=d[1];
+menu.innerHTML=bay(IMG.walk,'','DRIVER CHECK IN','Profiles',"openChk()")+D.map((d,i)=>{const n=i+1,k=d[1];
  if(k=='live')return bay('img/live'+(LI++%6)+'.webp',n,d[0].toUpperCase(),d[0]+' · <span style="color:#4ade80">● live</span>',`lv(${i})`);
  if(k=='end')return bay(IMG.end,n,'','End of row · closed','');
  if(k=='cw'||k=='ml')return bay(IMG.box,n,d[0].toUpperCase(),d[0],`saved('${k}',${i})`);
  return bay(IMG.tr,n,d[0].toUpperCase(),d[0]+' · <span id="t'+i+'">…</span> titles',`openT(${i})`,'w'+i)}).join('');
 D.forEach((d,i)=>{if(!['live','end','cw','ml'].includes(d[1]))fetch("https://archive.org/advancedsearch.php?output=json&rows=0&q="+encodeURIComponent(d[1])).then(r=>r.json()).then(j=>document.getElementById('t'+i).textContent=j.response.numFound.toLocaleString())});
-const LS=k=>JSON.parse(localStorage.getItem(k)||'{}'),SV=(k,o)=>localStorage.setItem(k,JSON.stringify(o));
+const AV=[["🚚","#b45309"],["🚛","#1d4ed8"],["🛻","#15803d"],["⛽","#b91c1c"],["🧭","#6d28d9"],["🎧","#0f766e"]];
+let PR=JSON.parse(localStorage.getItem('profiles')||'null'),avSel=0;
+const saveP=()=>localStorage.setItem('profiles',JSON.stringify(PR)),me=()=>PR.list.find(p=>p.id==PR.cur);
+const LS=k=>JSON.parse(localStorage.getItem(k+':'+PR.cur)||'{}'),SV=(k,o)=>localStorage.setItem(k+':'+PR.cur,JSON.stringify(o));
+const esc=t=>(t+'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+function renderP(){const m=me();pf.textContent=AV[m.av][0]+' '+m.name;
+ plist.innerHTML=PR.list.map(p=>`<div class="pr ${p.id==PR.cur?'cur':''}"><span class="av" style="background:${AV[p.av][1]}">${AV[p.av][0]}</span><b onclick="selP('${p.id}')">${esc(p.name)}${p.id==PR.cur?' ✓':''}</b><button onclick="renP('${p.id}')">Rename</button><button onclick="delP('${p.id}')">Delete</button></div>`).join('');
+ avs.innerHTML=AV.map((a,i)=>`<span class="${i==avSel?'sel':''}" style="background:${a[1]}" onclick="avSel=${i};renderP()">${a[0]}</span>`).join('')}
+function openChk(){hd.textContent='DRIVER CHECK IN';renderP();if(stack.at(-1)!='chk')go('chk')}
+function selP(id){PR.cur=id;saveP();renderP();stack=['ext'];show('ext');hd.textContent='DRYVAN DRIVE-IN'}
+function addP(){const n=pn.value.trim()||('Driver '+(PR.list.length+1));const id='p'+Date.now();PR.list.push({id,name:n.slice(0,20),av:avSel});pn.value='';selP(id)}
+function renP(id){const p=PR.list.find(x=>x.id==id),n=prompt('New name for '+p.name,p.name);if(n&&n.trim()){p.name=n.trim().slice(0,20);saveP();renderP()}}
+function delP(id){const p=PR.list.find(x=>x.id==id);if(!confirm('Delete driver "'+p.name+'" and their Continue Watching and My Loads?'))return;
+ localStorage.removeItem('cw:'+id);localStorage.removeItem('ml:'+id);PR.list=PR.list.filter(x=>x.id!=id);
+ if(!PR.list.length)PR.list.push({id:'p1',name:'Driver 1',av:0});if(!PR.list.some(x=>x.id==PR.cur))PR.cur=PR.list[0].id;saveP();renderP()}
+let first=!PR;if(first){PR={list:[{id:'p1',name:'Driver 1',av:0}],cur:'p1'};saveP()}
+setTimeout(()=>{renderP();if(first)openChk()},0);
 const fmt=t=>Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
 function saved(k,i){hd.textContent='DOOR '+(i+1)+' · '+D[i][0].toUpperCase();lt.textContent=D[i][0];more.style.display='none';
  const o=LS(k),a=Object.entries(o).sort((x,y)=>y[1].at-x[1].at);

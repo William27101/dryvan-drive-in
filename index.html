@@ -11,13 +11,23 @@ header img{width:34px;height:34px;border-radius:8px}header b{color:#fbbf24;lette
 .wall{position:relative;margin:10px auto;max-width:380px;height:440px;background:repeating-linear-gradient(90deg,#2a2a30 0 38px,#24242a 38px 40px);border-radius:4px;overflow:hidden;box-shadow:0 0 60px #000 inset}
 .light{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:26px;height:14px;background:#ffb347;border-radius:4px;box-shadow:0 0 30px 18px #ff9a2e88,0 80px 160px 60px #ff8c1a33}
 .num{position:absolute;top:44px;left:50%;transform:translateX(-50%);background:#fbbf24;color:#111;font-weight:900;font-size:30px;padding:2px 14px;border-radius:4px}
-.trailer{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:260px;height:300px;background:#e8e8e8;border:6px solid #9ca3af;display:flex;perspective:600px;cursor:pointer}
-.door{flex:1;background:linear-gradient(#f5f5f5,#cfcfcf);border:2px solid #888;transition:transform 1s;position:relative}
-.door:before{content:"";position:absolute;left:45%;top:10%;bottom:10%;width:6px;background:#777;border-radius:3px}
-.dl{transform-origin:left}.dr{transform-origin:right}
-.open .dl{transform:rotateY(-100deg)}.open .dr{transform:rotateY(100deg)}
-.lbl{position:absolute;top:-34px;left:0;right:0;color:#fbbf24;font-weight:700;letter-spacing:3px}
-.trailer .in{position:absolute;inset:0;background:#1a1208;z-index:-1}
+.dock{position:absolute;top:80px;left:50%;transform:translateX(-50%);width:230px;height:250px;background:#1a1208;overflow:hidden;border:6px solid #444}
+.dock .glow{position:absolute;inset:0;background:radial-gradient(#ffb34755,#1a1208 70%)}
+.roll{position:absolute;inset:0;background:repeating-linear-gradient(#8a8f98 0 16px,#6b7079 16px 19px);transition:transform 1.2s ease-in}
+.open .roll{transform:translateY(-100%)}
+.trailer{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:250px;height:300px;cursor:pointer;transition:transform 1s ease-in,opacity 1s}
+.open .trailer{transform:translateX(-50%) translateY(130%) scale(1.3);opacity:0}
+.front{position:absolute;top:0;left:0;right:0;height:240px;background:linear-gradient(#f4f4f4,#d4d4d4);border:4px solid #9ca3af;border-radius:6px 6px 2px 2px}
+.front:before{content:"";position:absolute;inset:14px;border:2px dashed #bbb}
+.lbl{position:absolute;top:70px;left:0;right:0;color:#333;font-weight:900;letter-spacing:4px;font-size:22px}
+.gh{position:absolute;bottom:22px;width:22px;height:14px;border-radius:7px}.gh.r{left:90px;background:#dc2626}.gh.b{left:138px;background:#2563eb}
+.plug{position:absolute;bottom:20px;left:116px;width:18px;height:18px;border-radius:50%;background:#222;border:3px solid #777}
+.plate{position:absolute;top:240px;left:20px;right:20px;height:12px;background:#555}
+.pin{position:absolute;top:252px;left:117px;width:16px;height:14px;background:#333;border-radius:0 0 4px 4px}
+.leg{position:absolute;top:252px;width:12px;height:44px;background:#4b5563}.leg.l{left:36px}.leg.rr{right:36px}
+.leg:after{content:"";position:absolute;bottom:-4px;left:-8px;width:28px;height:6px;background:#374151}
+.crank{position:absolute;top:262px;right:16px;width:22px;height:4px;background:#6b7280}
+.wall:after{content:"";position:absolute;bottom:0;left:0;right:0;height:16px;background:#111}
 .hint{color:#aaa;margin-top:8px}.red{display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}
 /* pallets */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px;background:linear-gradient(#1a1208,#0d0905)}
@@ -33,9 +43,9 @@ h2{margin:14px;color:#fbbf24;font-size:18px}
 video{width:100%;background:#000;max-height:60vh}#det{padding:0 0 30px}#det p{padding:0 14px;color:#ccc;font-size:14px}
 </style></head><body>
 <header><img src="icon.png" alt=""><b>DOOR 7 · DRAMA</b><button id="back" onclick="back()">◀ Back</button></header>
-<section id="ext" class="v on"><div class="wall"><div class="light"></div><div class="num">7</div>
-<div class="trailer" id="tr" onclick="openT()"><div class="lbl">DRAMA</div><div class="in"></div><div class="door dl"></div><div class="door dr"></div></div></div>
-<div class="hint"><span class="red"></span> Dropped trailer · On demand · <span id="tot">…</span> films<br>Tap the trailer doors to walk in</div></section>
+<section id="ext" class="v on"><div class="wall" id="tr"><div class="light"></div><div class="num">7</div>
+<div class="dock"><div class="glow"></div><div class="roll"></div></div><div class="trailer" onclick="openT()"><div class="front"><div class="lbl">DRAMA</div><div class="gh r"></div><div class="plug"></div><div class="gh b"></div></div><div class="plate"></div><div class="pin"></div><div class="leg l"></div><div class="leg rr"></div><div class="crank"></div></div></div>
+<div class="hint"><span class="red"></span> Dropped trailer · On demand · <span id="tot">…</span> films<br>Dropped nose-on · tap the trailer to roll up door 7</div></section>
 <section id="pals" class="v"><h2>Pallets by decade</h2><div class="grid" id="grid"></div></section>
 <section id="list" class="v"><h2 id="lt"></h2><div id="items"></div><button class="more" id="more" onclick="load()">Load more</button></section>
 <section id="det" class="v"><video id="vid" controls playsinline preload="metadata"></video><h2 id="dt"></h2><p id="dm"></p><p id="dd"></p></section>
@@ -50,7 +60,7 @@ function back(){if(stack.at(-1)=='det'){vid.pause();vid.removeAttribute('src');v
 S("q="+encodeURIComponent(B)+"&rows=0").then(j=>tot.textContent=j.response.numFound.toLocaleString());
 grid.innerHTML=P.map((p,i)=>`<div class="pal" onclick="pick(${i})"><div class="box">${p[0]}</div><small id="c${i}">counting…</small></div>`).join('');
 P.forEach((p,i)=>S("q="+q(p[1])+"&rows=0").then(j=>document.getElementById('c'+i).textContent=j.response.numFound.toLocaleString()+" films").catch(()=>document.getElementById('c'+i).textContent="count unavailable"));
-function openT(){tr.classList.add('open');setTimeout(()=>go('pals'),1000)}
+function openT(){tr.classList.add('open');setTimeout(()=>go('pals'),1300)}
 function pick(i){cur=i;page=1;items.innerHTML='';lt.textContent=P[i][0]+" pallet";go('list');load()}
 function load(){more.textContent="Loading…";S("q="+q(P[cur][1])+"&fl[]=identifier&fl[]=title&fl[]=year&sort[]=downloads+desc&rows=30&page="+page).then(j=>{
  items.insertAdjacentHTML('beforeend',j.response.docs.map(d=>`<div class="item" onclick="det('${d.identifier}')"><img loading="lazy" src="https://archive.org/services/img/${d.identifier}"><div><b>${(d.title+'').replace(/</g,'&lt;')}</b><span>${d.year||'no year'}</span></div></div>`).join(''));
